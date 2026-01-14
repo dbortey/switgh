@@ -13,26 +13,30 @@ export class AuthManager {
 
   private render() {
     this.container.innerHTML = `
-      <div class="min-h-screen flex items-center justify-center bg-gray-100">
-        <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-          <h1 class="text-3xl font-bold text-center mb-6">Social App</h1>
-          
-          <div class="flex mb-6 border-b">
-            <button 
-              id="login-tab" 
-              class="flex-1 py-2 ${this.showingLogin ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}"
-            >
-              Login
-            </button>
-            <button 
-              id="register-tab" 
-              class="flex-1 py-2 ${!this.showingLogin ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}"
-            >
-              Register
-            </button>
+      <div class="min-h-screen flex items-center justify-center bg-gray-50">
+        <div class="w-full max-w-md">
+          <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold tracking-tight">Social App</h1>
           </div>
           
-          <div id="auth-form-container"></div>
+          <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
+            <div class="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground w-full mb-6">
+              <button 
+                id="login-tab" 
+                class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none flex-1 ${this.showingLogin ? 'bg-background text-foreground shadow-sm' : ''}"
+              >
+                Login
+              </button>
+              <button 
+                id="register-tab" 
+                class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none flex-1 ${!this.showingLogin ? 'bg-background text-foreground shadow-sm' : ''}"
+              >
+                Register
+              </button>
+            </div>
+            
+            <div id="auth-form-container"></div>
+          </div>
         </div>
       </div>
     `;
@@ -74,13 +78,13 @@ class LoginForm {
     this.container.innerHTML = `
       <form id="login-form" class="space-y-4">
         ${this.error ? `
-          <div class="p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+          <div class="p-3 bg-destructive/10 border border-destructive/20 text-destructive rounded-md text-sm">
             ${this.error}
           </div>
         ` : ''}
         
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
+        <div class="space-y-2">
+          <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
             Username
           </label>
           <input 
@@ -88,14 +92,14 @@ class LoginForm {
             id="username" 
             name="username"
             required
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             placeholder="Enter username"
             ${this.loading ? 'disabled' : ''}
           />
         </div>
         
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
+        <div class="space-y-2">
+          <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
             Password
           </label>
           <input 
@@ -103,28 +107,28 @@ class LoginForm {
             id="password" 
             name="password"
             required
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             placeholder="Enter password"
             ${this.loading ? 'disabled' : ''}
           />
         </div>
         
-        <div class="flex items-center">
+        <div class="flex items-center space-x-2">
           <input 
             type="checkbox" 
             id="remember-me" 
             name="remember-me"
-            class="h-4 w-4 text-blue-600 border-gray-300 rounded"
+            class="h-4 w-4 rounded border-input"
             ${this.loading ? 'disabled' : ''}
           />
-          <label for="remember-me" class="ml-2 block text-sm text-gray-700">
+          <label for="remember-me" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
             Remember me
           </label>
         </div>
         
         <button 
           type="submit" 
-          class="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 w-full"
           ${this.loading ? 'disabled' : ''}
         >
           ${this.loading ? 'Logging in...' : 'Login'}
@@ -150,7 +154,6 @@ class LoginForm {
 
     try {
       await apiService.login(username, password, rememberMe);
-      // Reload page to show authenticated content
       window.location.reload();
     } catch (err) {
       this.error = err instanceof Error ? err.message : 'Login failed';
@@ -174,13 +177,13 @@ class RegisterForm {
     this.container.innerHTML = `
       <form id="register-form" class="space-y-4">
         ${this.error ? `
-          <div class="p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+          <div class="p-3 bg-destructive/10 border border-destructive/20 text-destructive rounded-md text-sm">
             ${this.error}
           </div>
         ` : ''}
         
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
+        <div class="space-y-2">
+          <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
             Username
           </label>
           <input 
@@ -189,17 +192,17 @@ class RegisterForm {
             name="username"
             required
             pattern="[a-z0-9._]{3,30}"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             placeholder="3-30 characters (lowercase, numbers, . or _)"
             ${this.loading ? 'disabled' : ''}
           />
-          <p class="text-xs text-gray-500 mt-1">
+          <p class="text-xs text-muted-foreground">
             Lowercase letters, numbers, dots, and underscores only
           </p>
         </div>
         
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
+        <div class="space-y-2">
+          <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
             Password
           </label>
           <input 
@@ -208,14 +211,14 @@ class RegisterForm {
             name="password"
             required
             minlength="6"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             placeholder="At least 6 characters"
             ${this.loading ? 'disabled' : ''}
           />
         </div>
         
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
+        <div class="space-y-2">
+          <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
             Confirm Password
           </label>
           <input 
@@ -224,7 +227,7 @@ class RegisterForm {
             name="confirm-password"
             required
             minlength="6"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             placeholder="Re-enter password"
             ${this.loading ? 'disabled' : ''}
           />
@@ -232,7 +235,7 @@ class RegisterForm {
         
         <button 
           type="submit" 
-          class="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 w-full"
           ${this.loading ? 'disabled' : ''}
         >
           ${this.loading ? 'Creating account...' : 'Create Account'}
@@ -252,7 +255,6 @@ class RegisterForm {
     const password = (form.elements.namedItem('password') as HTMLInputElement).value;
     const confirmPassword = (form.elements.namedItem('confirm-password') as HTMLInputElement).value;
 
-    // Client-side validation
     if (password !== confirmPassword) {
       this.error = 'Passwords do not match';
       this.render();
@@ -283,7 +285,6 @@ class RegisterForm {
 
     try {
       await apiService.register(username, password);
-      // Reload page to show authenticated content
       window.location.reload();
     } catch (err) {
       this.error = err instanceof Error ? err.message : 'Registration failed';
