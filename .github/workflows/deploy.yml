@@ -46,3 +46,4 @@ jobs:
         local-dir: ./api/
         server-dir: /public_html/api/
         timeout: 600000
+        dangerous-clean-slate: true
