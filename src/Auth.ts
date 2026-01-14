@@ -31,7 +31,7 @@ export class AuthManager {
                 id="register-tab" 
                 class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none flex-1 ${!this.showingLogin ? 'bg-background text-foreground shadow-sm' : ''}"
               >
-                Register
+                Register Now
               </button>
             </div>
             
