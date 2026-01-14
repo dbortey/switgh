@@ -23,7 +23,13 @@ jobs:
     - name: Build project
       run: npm run build
     
-    - name: Deploy frontend to FTP
+    - name: Prepare deployment folder
+      run: |
+        mkdir -p deploy
+        cp -r dist/* deploy/
+        cp -r api deploy/api
+    
+    - name: Deploy to FTP
       uses: SamKirkland/FTP-Deploy-Action@4.3.3
       with:
         server: ${{ secrets.FTP_SERVER }}
@@ -31,19 +37,6 @@ jobs:
         password: ${{ secrets.FTP_PASSWORD }}
         protocol: ftps
         port: 21
-        local-dir: ./dist/
+        local-dir: ./deploy/
         server-dir: /public_html/
         timeout: 600000
-    
-    - name: Deploy API files to FTP
-      uses: SamKirkland/FTP-Deploy-Action@4.3.3
-      with:
-        server: ${{ secrets.FTP_SERVER }}
-        username: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        protocol: ftps
-        port: 21
-        local-dir: ./api/
-        server-dir: /public_html/api/
-        timeout: 600000
-        dangerous-clean-slate: true
