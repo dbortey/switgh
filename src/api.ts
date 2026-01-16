@@ -13,6 +13,19 @@ interface AuthUser {
   online_status: boolean;
 }
 
+interface Post {
+  id: number;
+  user_id: number;
+  username: string;
+  profile_pic: string;
+  image_url: string | null;
+  video_url: string | null;
+  caption: string | null;
+  created_at: string;
+  like_count: number;
+  user_liked: boolean;
+}
+
 // Current authenticated user state
 let currentUser: AuthUser | null = null;
 
@@ -96,6 +109,83 @@ export const apiService = {
     return currentUser;
   },
 
+  // Posts methods
+  async getFeed(limit: number = 20, offset: number = 0): Promise<Post[]> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/posts.php?action=feed&limit=${limit}&offset=${offset}`, {
+        credentials: 'include',
+      });
+      
+      // Try to parse as JSON, but catch parsing errors
+      const text = await response.text();
+      let data;
+      
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        console.error('Invalid JSON response:', text);
+        throw new Error('Server returned invalid response. Please check console for details.');
+      }
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch feed');
+      }
+      
+      return data.posts;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Failed to fetch feed');
+    }
+  },
+
+  async createPost(caption: string, imageUrl?: string, videoUrl?: string): Promise<Post> {
+    const response = await fetch(`${API_BASE_URL}/posts.php?action=create`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({ caption, image_url: imageUrl, video_url: videoUrl }),
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to create post');
+    }
+    
+    return data.post;
+  },
+
+  async deletePost(postId: number): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/posts.php?action=delete&id=${postId}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    });
+    
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.error || 'Failed to delete post');
+    }
+  },
+
+  async toggleLike(postId: number): Promise<{ liked: boolean; like_count: number }> {
+    const response = await fetch(`${API_BASE_URL}/posts.php?action=like&id=${postId}`, {
+      method: 'POST',
+      credentials: 'include',
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to toggle like');
+    }
+    
+    return data;
+  },
+
   // Existing user methods (for testing old functionality)
   async getUsers(): Promise<User[]> {
     const response = await fetch(`${API_BASE_URL}/users.php`);
@@ -123,4 +213,4 @@ export const apiService = {
   },
 };
 
-export type { AuthUser, User };
+export type { AuthUser, User, Post };
